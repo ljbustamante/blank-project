@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Country {
+  id                         Int                          @id @default(autoincrement())
+  uuid                       String                       @unique @default(uuid()) @db.VarChar()
+  name                       String                       @db.VarChar()
+  code                       String                       @unique @db.VarChar()
+  county                     County[]
+  @@map("countries")
+}
+
+
+model County {
+  id                         Int                          @id @default(autoincrement())
+  uuid                       String                       @unique @default(uuid()) @db.VarChar()
+  name                       String                       @db.VarChar()
+  code                       String                       @unique @db.VarChar()
+  country                    Country                      @relation(fields: [countryUuid], references: [uuid])
+  countryUuid                String
+  city                       City[]
+  @@map("counties")
+}
+
+model City {
+  id                         Int                          @id @default(autoincrement())
+  uuid                       String                       @unique @default(uuid()) @db.VarChar()
+  name                       String                       @db.VarChar()
+  code                       String                       @unique @db.VarChar()
+  county                     County                       @relation(fields: [countyUuid], references: [uuid])
+  countyUuid                 String
+  district                   District[]
+  @@map("cities")
+}
+
+model District {
+  id                         Int                          @id @default(autoincrement())
+  uuid                       String                       @unique @default(uuid()) @db.VarChar()
+  name                       String                       @db.VarChar()
+  code                       String                       @unique @db.VarChar()
+  ubigeo                     String                       @db.VarChar()
+  city                       City                         @relation(fields: [cityUuid], references: [uuid])
+  cityUuid                   String
+
+  @@map("districts")
+}
